@@ -30,7 +30,7 @@ Avant toute génération :
 
 ## 4. Génération et choix des prises
 - **Une requête par segment** (phrase ou phrase musicale), jamais tout le texte d'un bloc : chaque segment garde son énergie et le calage est plus simple.
-- Génère **3–4 prises par segment**. Choisis dans cet ordre de priorité :
+- Génère **2 prises par segment**. Choisis dans cet ordre de priorité :
   1. l'émotion prévue dans l'arc est bien là ;
   2. aucun artefact (mot coupé ou mangé, souffle métallique, accent étranger, tag prononcé à voix haute) ;
   3. la durée convient (si un minutage est imposé).
@@ -46,12 +46,59 @@ Avant toute génération :
 - **Garde les respirations** : elles rendent la voix humaine. Atténue-les de 3–6 dB seulement si elles sont trop fortes.
 - N'étire ou ne compresse jamais un segment de plus de 5 % (algorithme qui préserve la hauteur). Si une prise ne tient pas dans le temps, prends-en une autre plutôt que de la déformer.
 
-## 7. Traitement (subtil, rendu « micro studio »)
-- Passe-haut 80 Hz, chaleur +1,5 dB vers 150–200 Hz, présence +2 dB vers 3–5 kHz, de-esser doux.
-- Compression légère (2,5:1 à 3:1) qui garde les nuances : les passages doux restent doux.
-- Très légère réverbération de petite pièce (5–8 % de mix, ~0,4 s) pour éviter l'effet « collé » synthétique. Pas d'écho.
-- Avec musique : ducking doux (~-7 dB, attaque ~30 ms, relâche ~250 ms), et -2 à -3 dB de plus sur les passages intimes ou vulnérables. La voix reste toujours claire et au-dessus de la musique.
-- Niveau final par défaut : environ -14 LUFS, pics sous -1 dBTP (sauf consigne contraire).
+## 7. Traitement (adapté au contexte)
+
+> Les valeurs ci-dessous sont des points de départ. Ajuste-les selon la scène, avec un but :
+> la voix doit sonner vraie dans son contexte (un chuchotement reste fragile, un cri reste
+> violent mais jamais agressif à l'oreille). L'important, c'est le contraste entre les moments,
+> pas un son uniforme.
+> Après le traitement, vérifie le niveau (LUFS, crêtes) et l'écart entre les passages doux
+> et les passages forts avant de livrer.
+
+### 7.1 Choisir le profil
+- Lis le brief : narration / documentaire / tuto → **Narratif** (défaut).
+  Fiction, horreur, thriller, ASMR, scène vécue → profils **immersifs**.
+- Si la vidéo mélange les registres, choisis le profil **par segment**. Les audio tags
+  ([whispers], [shouting], [panicked], [crying]…) et l'arc émotionnel indiquent lequel prendre.
+- Entre deux profils, fais une transition en douceur (fondu de paramètres sur 100–300 ms).
+  Jamais de saut brutal de compression ou de réverbération au milieu d'une phrase.
+- Si le prompt donne des réglages explicites, ils passent avant le profil.
+
+### 7.2 Profils
+
+| | Narratif (défaut) | Intime / chuchoté | Tension / stress / panique | Cri / explosion |
+|---|---|---|---|---|
+| Passe-haut | 80 Hz | 100–120 Hz (le chuchotement n'a pas de grave utile) | 90 Hz | 100 Hz |
+| Chaleur 150–200 Hz | +1,5 dB | +2 dB (effet de proximité) | 0 à +1 dB | 0 dB (sinon ça gonfle) |
+| Présence 3–5 kHz | +2 dB | +0,5 à +1 dB seulement (le souffle siffle vite) | +2 à +3 dB (urgence, articulation) | −1 à −2 dB vers 2,5–4 kHz (dureté) |
+| De-esser | doux | **fort** | moyen | moyen + limiteur |
+| Compression | 2,5:1 à 3:1, lente | 2:1, très douce : garder le souffle | 3:1 à 4:1, attaque rapide (~5 ms) : respiration hachée audible | 4:1 + limiteur de crête : contenir sans écraser |
+| Réverbération | petite pièce 5–8 %, ~0,4 s | quasi sèche (0–3 %) : la voix est « dans l'oreille » | sèche ou selon le lieu de la scène | selon le lieu ; une queue courte aide le cri à « exister » |
+| Écart de niveau vs narratif | réf. 0 dB | −6 à −10 dB perçus | −2 à +2 dB | +4 à +6 dB perçus (jamais au-dessus du plafond de crête) |
+
+### 7.3 Espace (immersif uniquement)
+La réverbération suit le lieu de la scène, pas une règle fixe :
+- Extérieur : aucune réverbération, éventuellement un léger filtre du bas (lointain).
+- Petite pièce : 0,3–0,5 s.
+- Couloir / cave / hangar : 0,8–1,5 s, plus de mix sur les cris.
+- Voix « dans la tête » ou monologue intérieur : sèche, proche, légère chaleur en plus.
+
+### 7.4 Musique et ambiance
+- Narratif : ducking doux (~−7 dB, attaque ~30 ms, relâche ~250 ms), −2 à −3 dB de plus
+  sur les passages intimes.
+- Chuchoté : musique baissée de −10 à −12 dB, ou coupée. Le chuchotement doit rester intelligible.
+- Panique : ducking plus rapide (attaque ~10 ms, relâche ~150 ms). La musique peut rester tendue,
+  mais la voix reste devant.
+- Cri : peu de ducking (−3 à −4 dB). Le cri passe naturellement par-dessus.
+- Dans tous les cas, la voix reste intelligible au-dessus du fond.
+
+### 7.5 Niveau final
+- Normalise **la piste entière, jamais chaque segment séparément**. Sinon un chuchotement finit
+  aussi fort qu'un cri et l'immersion disparaît.
+- Narratif : ~−14 LUFS intégré, plage dynamique (LRA) ~5–8 LU.
+- Immersif : −14 à −16 LUFS intégré, LRA de 10 à 15 LU accepté.
+- Pics sous −1 dBTP partout (limiteur final transparent).
+- Sauf consigne contraire.
 
 ## 8. Validation avant la suite
 - Avant de monter la vidéo ou de livrer, fais écouter les segments retenus avec `voice_arc.md` et `voice_takes.md`, et demande si une partie sonne encore robotique. Régénère ce qui ne va pas avant de continuer.
